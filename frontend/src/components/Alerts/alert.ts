@@ -1,14 +1,14 @@
 import React, {FC} from 'react';
 
-// interface ITooltips{
+// interface IAlert{
 
 // }
 
-// const Tooltips: FC = (props: ITooltips) => {
+// const Alert: FC = (props: IAlert) => {
 //     return ( 
 //         <>
 //         </>
 //      );
 // }
  
-// export default Tooltips;
+// export default Alert;

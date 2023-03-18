@@ -1,14 +1,14 @@
 import React, {FC} from 'react';
 
-// interface ITooltips{
+// interface IModal{
 
 // }
 
-// const Tooltips: FC = (props: ITooltips) => {
+// const Modal: FC = (props: IModal) => {
 //     return ( 
 //         <>
 //         </>
 //      );
 // }
  
-// export default Tooltips;
+// export default Modal;

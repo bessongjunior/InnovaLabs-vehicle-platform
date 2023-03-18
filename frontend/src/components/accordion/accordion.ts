@@ -1,14 +1,14 @@
 import React, {FC} from 'react';
 
-interface IAccordion{
+// interface IAccordion{
 
-}
+// }
 
-const Accordion: FC = (props: IAccordion) => {
-    return ( 
-        <>
-        </>
-     );
-}
+// const Accordion: FC = (props: IAccordion) => {
+//     return ( 
+//         <>
+//         </>
+//      );
+// }
  
-export default Accordion;
+// export default Accordion;

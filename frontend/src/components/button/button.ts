@@ -1,13 +1,13 @@
 import React, { FC } from 'react';
 
-interface IButtonProps {
-}
+// interface IButtonProps {
+// }
 
-const Button: FC<IButtonProps> = (props) => {
-  return (
-    <div>
-    </div>
-  );
-}
+// const Button: FC<IButtonProps> = (props) => {
+//   return (
+//     <div>
+//     </div>
+//   );
+// }
 
-export default Button;
+// export default Button;

@@ -156,7 +156,7 @@ class VerifyUser(Resource):
             return {"success": False,
                     "msg": "Email verification failed! Try again"}, 400
         
-        user = User.query.filter_by(email=email).first_or_404()
+        user = Users.query.filter_by(email=email).first_or_404()
         if user.isVerified:
             # return response_with(resp. INVALID_INPUT_422)
             return {"sucess" : False, "msg": "Email already verified"}, 400

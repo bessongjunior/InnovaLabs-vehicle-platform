@@ -1,6 +1,6 @@
-/frontend/node_modules
-/backend/env
-/mobile/web
-/mobile/windows
-/mobile/macos
-/windows/linux
+frontend/node_modules
+backend/env
+mobile/web
+mobile/windows
+mobile/macos
+mobile/linux

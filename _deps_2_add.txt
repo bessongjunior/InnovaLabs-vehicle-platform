@@ -1,0 +1,15 @@
+frontend >>
+-rxjs
+-react-rxjs
+-testing libs (e2e with puppeteer, sinon, serve etc)
+-internationalization libs()
+- others to be added as projects goes on
+
+
+Backend >>
+-flask-migrate, gunicorn
+-others to be added as projects goes on
+
+
+mobile >>
+-Yet to start

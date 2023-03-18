@@ -1,54 +1,108 @@
-# Storefront Backend Project
+# Innova labs Inc Project on Car Sale and Rental Platform
 
 ## Getting Started
 
-This repo contains a basic Node and Express app to get you started in constructing an API. To get started, clone this repo and run `yarn` in your terminal at the project root.
 
-## Required Technologies
-Your application must make use of the following libraries:
-- Postgres for the database
-- Node/Express for the application logic
-- dotenv from npm for managing environment variables
-- db-migrate from npm for migrations
-- jsonwebtoken from npm for working with JWTs
-- jasmine from npm for testing
 
-## Steps to Completion
+This repo contains a frontend react based project powered with Node.js and React.js, a backend app powered with Python and Flask mainly our constructed customized API and mobile based powered with Dart and Flutter. To get started, clone this repo in your terminal at the project root and follow the instructions below.
 
-### 1. Plan to Meet Requirements
 
-In this repo there is a `REQUIREMENTS.md` document which outlines what this API needs to supply for the frontend, as well as the agreed upon data shapes to be passed between front and backend. This is much like a document you might come across in real life when building or extending an API. 
 
-Your first task is to read the requirements and update the document with the following:
-- Determine the RESTful route for each endpoint listed. Add the RESTful route and HTTP verb to the document so that the frontend developer can begin to build their fetch requests.    
-**Example**: A SHOW route: 'blogs/:id' [GET] 
+## Required Technology
 
-- Design the Postgres database tables based off the data shape requirements. Add to the requirements document the database tables and columns being sure to mark foreign keys.   
-**Example**: You can format this however you like but these types of information should be provided
-Table: Books (id:varchar, title:varchar, author:varchar, published_year:varchar, publisher_id:string[foreign key to publishers table], pages:number)
+The application make use of the following libraries:
 
-**NOTE** It is important to remember that there might not be a one to one ratio between data shapes and database tables. Data shapes only outline the structure of objects being passed between frontend and API, the database may need multiple tables to store a single shape. 
+### Frontend -> React
 
-### 2.  DB Creation and Migrations
+- React.js, Vite and Typescript
 
-Now that you have the structure of the databse outlined, it is time to create the database and migrations. Add the npm packages dotenv and db-migrate that we used in the course and setup your Postgres database. If you get stuck, you can always revisit the database lesson for a reminder. 
+- Redux and React-redux, Recoil
 
-You must also ensure that any sensitive information is hashed with bcrypt. If any passwords are found in plain text in your application it will not pass.
+- clsx and prop-types
 
-### 3. Models
+- node-sass, scss-loader, typings-for-scss-modules-loader
 
-Create the models for each database table. The methods in each model should map to the endpoints in `REQUIREMENTS.md`. Remember that these models should all have test suites and mocks.
+- yup, formik, lodash, moment
 
-### 4. Express Handlers
+- React-content-loader, React-icons
 
-Set up the Express handlers to route incoming requests to the correct model method. Make sure that the endpoints you create match up with the enpoints listed in `REQUIREMENTS.md`. Endpoints must have tests and be CORS enabled. 
+- react-bootstrap, react-chartjs-2, @mui/material, styled-components
 
-### 5. JWTs
+- axios, rxjs, react-rxjs
 
-Add JWT functionality as shown in the course. Make sure that JWTs are required for the routes listed in `REQUIUREMENTS.md`.
+  
 
-### 6. QA and `README.md`
+### Backend -> Flask
 
-Before submitting, make sure that your project is complete with a `README.md`. Your `README.md` must include instructions for setting up and running your project including how you setup, run, and connect to your database. 
+- Flask, Flask[async] and Flask-Restx
 
-Before submitting your project, spin it up and test each endpoint. If each one responds with data that matches the data shapes from the `REQUIREMENTS.md`, it is ready for submission!
+- Flask-Cors, Flask-Bcrypt and Flask-JWT-Extended
+
+- Flask-Mail, Flask-SQLAlchemy, Flask-MongoEngine and Flask-Uploads
+
+- Oauth2, Oauth2Client and Flask-Dance
+
+- Flask-Migrate and Gunicorn
+
+- Pytest and Pylint
+
+  
+
+###  Mobile -> Flutter
+
+- Rxdart, http, image_picker and path
+- Dio, provider, BLoC / shared_preferences / redux and  flutter_svg
+- url_launcher, scrollable_positioned_list and carousel_slider
+- font_awesome_flutter, charts_flutter and flutter_launch_icons
+- integration_test and flutter_test
+- google_maps_flutter, flutter_polyline_points, geolocator and path_providing
+
+
+
+### Steps to first release
+
+Follow the Software Architecture and the CI|CD Pipeline especially.
+
+- Follow the SRS for each individual module
+- Build a well structured and customized Database for both the API and the Persistence needed to in mobile. Migrate the database when necessary
+- Leverage strong Security and Privacy principles so as to Secure the platform
+- Apply DevSecOps using Owasp for Security testing
+- Ensure Type checks and Linting to maximize and optimize code
+- App logging and feedback well structured.
+
+## Running the app
+
+### Running the backend
+
+```
+$ cd backend
+$ make env
+$ make install
+$ make pylint
+$ make run
+-- using docker 
+$ xxx
+```
+
+### Running the frontend
+
+```
+$ cd frontend
+$ yarn install
+$ yarn dev
+$ yarn build
+-- using docker
+$ xxxx
+```
+
+### Running mobile
+
+```
+$ cd mobile
+$ flutter pub get
+$ flutter doctor
+$ flutter run
+-- running and profiling using android studio
+$ xxx
+```
+

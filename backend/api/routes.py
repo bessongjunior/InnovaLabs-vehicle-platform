@@ -1,21 +1,26 @@
-from flask import Flask, request, render_template
-from flask_restx import API, Resource, fields, Namespace
-from functools import wraps
-from api.models import db, Users, JWTTokenBlocklist
+from flask import request, render_template, url_for
+from flask_restx import Api, Resource, fields #, Namespace
 from datetime import datetime, timezone, timedelta
+from functools import wraps
+import jwt
+import logging
+
+from api.models import db, Users, JWTTokenBlocklist
 from api.config import BaseConfig
 from api.token_utils import confirm_verification_token, generate_verification_token
-import jwt
+from api.send_email_utils import send_email
 
 
 
-email_sample = Namespace("mails", description="Resets and confirm email related operations")
+# email_sample = Namespace("mails", description="Resets and confirm email related operations")
+email_sample = Api(version="1.0", title="Users API with email confirmation")
 
 # sign-in model for api requests
 
 signup_model = email_sample.model('SignUpModel', {"username": fields.String(required=True, min_length=2, max_length=32),
                                               "email": fields.String(required=True, min_length=4, max_length=64),
-                                              "password": fields.String(required=True, min_length=4, max_length=16)
+                                              "password": fields.String(required=True, min_length=4, max_length=16),
+                                              "contact": fields.String(required=True, min_length=8, max_length=16)
                                               })
 
 login_model = email_sample.model('LoginModel', {"email": fields.String(required=True, min_length=4, max_length=64),
@@ -62,78 +67,106 @@ def token_required(f):
 
 @email_sample.route('/api/register')
 class Register(Resource):
-    """
-       Creates a new user by taking 'signup_model' input
-    """
+    """ Creates a new user by taking 'signup_model' input """
 
     @email_sample.expect(signup_model, validate=True)
     def post(self):
+            
+        try:
 
-        req_data = request.get_json()
+            if not request.is_json():
+                return {"success": False,
+                        "msg": "Bad Request."}, 400
+            
+            req_data = request.get_json()
 
-        _username = req_data.get("username")
-        _email = req_data.get("email")
-        _password = req_data.get("password")
+            _username = req_data.get("username")
+            _email = req_data.get("email")
+            _password = req_data.get("password")
+            _contact = req_data.get("contact")
 
-        user_exists = Users.get_by_email(_email)
-        if user_exists:
+            user_exists = Users.get_by_email(_email)
+            if user_exists:
+                return {"success": False,
+                        "msg": "Email already taken"}, 400
+            
+            token = generate_verification_token(req_data['email'])
+            verification_email = url_for('email_sample.VerifyUser', token=token, _external=True)
+            html = render_template("reset-sample.html", verification_email=verification_email)
+            subject = "Please Confirm your email"        
+
+            send_email(req_data.email, subject, html)
+
+            new_user = Users(username=_username, email=_email, contact=_contact)
+
+            new_user.set_password(_password)
+            new_user.save()
+
+            return {"success": True,
+                    "userID": new_user.id,
+                    "msg": "The user was successfully registered"}, 200
+    
+        except Exception as e:
+            print(e)
+            # log =  logging.e
+            # set error to logging module, the method above will raise an internal error
             return {"success": False,
-                    "msg": "Email already taken"}, 400
-
-        new_user = Users(username=_username, email=_email)
-
-        new_user.set_password(_password)
-        new_user.save()
-
-        return {"success": True,
-                "userID": new_user.id,
-                "msg": "The user was successfully registered"}, 200
+                    "msg": "Email not confirmed"}, 400
 
 
 @email_sample.route('/api/login')
 class Login(Resource):
-    """
-       Login user by taking 'login_model' input and return JWT token
-    """
+    """ Login user by taking 'login_model' input and return JWT token """
 
     @email_sample.expect(login_model, validate=True)
     def post(self):
 
-        if not request.is_json():
-            return {"success": False,
-                    "msg": "Bad Request."}, 400
+        try:
+            if not request.is_json():
+                return {"success": False,
+                        "msg": "Bad Request."}, 400
+            
+            req_data = request.get_json()
+
+            # if (Users.get_by_email(req_data['email']) is not None or Users.get_by_username(req_data['username']) is not None):
+            #     return {"success": False,
+            #             "msg": "Bad Request."}, 400
+            
+
+            _email = req_data.get("email")
+            _password = req_data.get("password")
+
+            user_exists = Users.get_by_email(_email)
+
+            if not user_exists:
+                return {"success": False,
+                        "msg": "This email does not exist."}, 400
+
+            if not user_exists.check_password(_password):
+                return {"success": False,
+                        "msg": "Wrong credentials."}, 400
+
+            # create access token uwing JWT
+            token = jwt.encode({'email': _email, 'exp': datetime.utcnow() + timedelta(minutes=30)}, BaseConfig.SECRET_KEY)
+
+            user_exists.set_jwt_auth_active(True)
+            user_exists.save()
+
+            return {"success": True,
+                    "token": token,
+                    "user": user_exists.toJSON()}, 200
         
-        req_data = request.get_json()
-
-        _email = req_data.get("email")
-        _password = req_data.get("password")
-
-        user_exists = Users.get_by_email(_email)
-
-        if not user_exists:
+        except Exception as e:
+            print(e)
+            # log =  logging.e
+            # set error to logging module, the method above will raise an internal error
             return {"success": False,
-                    "msg": "This email does not exist."}, 400
-
-        if not user_exists.check_password(_password):
-            return {"success": False,
-                    "msg": "Wrong credentials."}, 400
-
-        # create access token uwing JWT
-        token = jwt.encode({'email': _email, 'exp': datetime.utcnow() + timedelta(minutes=30)}, BaseConfig.SECRET_KEY)
-
-        user_exists.set_jwt_auth_active(True)
-        user_exists.save()
-
-        return {"success": True,
-                "token": token,
-                "user": user_exists.toJSON()}, 200
+                        "msg": "Bad Request."}, 400
     
 
 @email_sample.route('/api/logout')
 class LogoutUser(Resource):
-    """
-       Logs out User using 'logout_model' input
-    """
+    """ Logs out User using 'logout_model' input """
 
     @token_required
     def post(self, current_user):
@@ -146,7 +179,8 @@ class LogoutUser(Resource):
         self.set_jwt_auth_active(False)
         self.save()
 
-@email_sample.route('/confirm/<token>', methods=['GET'])
+
+@email_sample.route('/api/confirm/<token>', methods=['GET'])
 class VerifyUser(Resource):
     '''Verify and confirm user email'''
     def Get(self, token):
@@ -158,7 +192,6 @@ class VerifyUser(Resource):
         
         user = Users.query.filter_by(email=email).first_or_404()
         if user.isVerified:
-            # return response_with(resp. INVALID_INPUT_422)
             return {"sucess" : False, "msg": "Email already verified"}, 400
         else:
             user.isVerified = True

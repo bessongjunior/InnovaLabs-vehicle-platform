@@ -1,10 +1,10 @@
 from datetime import datetime
-import json
+# import json
 
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_bcrypt import bcrypt
+# from flask_bcrypt import bcrypt
 from flask_sqlalchemy import SQLAlchemy
-from flask_sqlalchemy import SQLAlchemy
+
 
 
 db = SQLAlchemy()
@@ -12,14 +12,14 @@ db = SQLAlchemy()
 
 
 
-class User(db.Model):
+class Users(db.Model):
     """User database model"""
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(64), nullable=False)
-    contact = db.Column(db.Integer(13), unique=True, nullable=False)
-    isVerified = db.Column(db.Boolean, nullable=False, default=False)
+    contact = db.Column(db.Integer, unique=True, nullable=False)
+    isVerified = db.Column(db.Boolean,  nullable=False, default=False)
     image_file = db.Column(db.String(20), nullable=False, default='default.jpg')
     posts = db.relationship('Post', backref='author', lazy=True)
 
@@ -55,6 +55,10 @@ class User(db.Model):
     @classmethod
     def get_by_email(cls, email):
         return cls.query.filter_by(email=email).first()
+    
+    @classmethod
+    def get_by_username(cls, username):
+        return cls.query.filter_by(username = username).first()
 
     def toDICT(self):
 

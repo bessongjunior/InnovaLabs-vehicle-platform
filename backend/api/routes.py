@@ -70,7 +70,7 @@ class Register(Resource):
     """ Creates a new user by taking 'signup_model' input """
 
     @email_sample.expect(signup_model, validate=True)
-    def post(self):
+    async def post(self):
             
         try:
 
@@ -95,7 +95,7 @@ class Register(Resource):
             html = render_template("reset-sample.html", verification_email=verification_email)
             subject = "Please Confirm your email"        
 
-            send_email(req_data.email, subject, html)
+            await send_email(req_data.email, subject, html)
 
             new_user = Users(username=_username, email=_email, contact=_contact)
 
@@ -180,16 +180,18 @@ class LogoutUser(Resource):
         self.save()
 
 
-@email_sample.route('/api/confirm/<token>', methods=['GET'])
+@email_sample.route('/api/confirm/<string:token>') #, methods=['GET']
 class VerifyUser(Resource):
     '''Verify and confirm user email'''
-    def Get(self, token):
+
+    @email_sample.expect(signup_model, validate=True)
+    async def Post(self, token):
         try:
-            email = confirm_verification_token(token)
+            email = await confirm_verification_token(token)
         except:
             return {"success": False,
                     "msg": "Email verification failed! Try again"}, 400
-        
+        data =  request.get_data()
         user = Users.query.filter_by(email=email).first_or_404()
         if user.isVerified:
             return {"sucess" : False, "msg": "Email already verified"}, 400
@@ -199,3 +201,10 @@ class VerifyUser(Resource):
             db.session.commit()
         return {"success": True,
                 'msg': 'E-mail verified, you can proceed to login now.'}, 200
+
+@email_sample.route('/api/reset_pass/<string:Token>')
+class ResetPassword(Resource):
+    """Email Reset password token"""
+    pass
+#     async def Post(self, token):
+#         pass 

@@ -11,7 +11,6 @@ db = SQLAlchemy()
 
 
 
-
 class Users(db.Model):
     """User database model"""
     id = db.Column(db.Integer, primary_key=True)

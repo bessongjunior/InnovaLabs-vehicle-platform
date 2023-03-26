@@ -1,14 +1,15 @@
-from flask import Flask
-from flask_cors import CORS
+''' Init app instance and other used package '''
+import json
 from werkzeug.middleware.proxy_fix import ProxyFix
-import json, os
-
-from api.config import BaseConfig #ProductionConfig, TestingConfig, DevelopmentConfig, 
-from .models import db
-from .send_email_utils import mail
+from flask_cors import CORS
+from flask import Flask
+from .config import BaseConfig  #ProductionConfig, TestingConfig, DevelopmentConfig, 
+# from .models import db
+# from .send_email_utils import mail
 from .routes import email_sample
 
 app = Flask(__name__)
+
 app.wsgi_app = ProxyFix(app.wsgi_app)
 
 # if os.environ.get('env') == 'PROD':
@@ -28,9 +29,10 @@ CORS(app)
 # Setup database
 @app.before_first_request
 def initialize_database():
+    '''create db instance'''
     db.create_all()
 
-"""Custom responses"""
+
 @app.after_request
 def after_request(response):
     """ Sends back a custom error with {"success", "msg"} format """

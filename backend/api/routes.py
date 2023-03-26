@@ -185,12 +185,13 @@ class VerifyUser(Resource):
     '''Verify and confirm user email'''
 
     @email_sample.expect(signup_model, validate=True)
-    async def Post(self, token):
+    def Post(self, token):
         try:
-            email = await confirm_verification_token(token)
+            email = confirm_verification_token(token)
         except:
             return {"success": False,
                     "msg": "Email verification failed! Try again"}, 400
+        
         data =  request.get_data()
         user = Users.query.filter_by(email=email).first_or_404()
         if user.isVerified:
@@ -202,9 +203,9 @@ class VerifyUser(Resource):
         return {"success": True,
                 'msg': 'E-mail verified, you can proceed to login now.'}, 200
 
-@email_sample.route('/api/reset_pass/<string:Token>')
-class ResetPassword(Resource):
-    """Email Reset password token"""
-    pass
+# @email_sample.route('/api/reset_pass/<string:Token>')
+# class ResetPassword(Resource):
+#     """Email Reset password token"""
+#     pass
 #     async def Post(self, token):
 #         pass 
